@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 18
+  pre_build:
+    commands:
+      - echo "Login with ecr credentials"
+      - $(aws ecr get-login --region $AWS_DEFAULT_REGION  --no-include-email)
+      - docker pull $DOCKER_IMAGE:latest
+  build:
+    commands:
+      - echo "Building images..."
+      - docker-compose build
+  post_build:
+    commands:
+      - if [ $CODEBUILD_BUILD_SUCCEEDING = 1 ];
+        then
+        echo "Pushing images to ecs docker repository";
+        docker-compose push;
+        printf '[{"name":"textminator","imageUri":"%s"}]' $DOCKER_IMAGE:latest > textminator.json;
+        else
+        echo 'Build failed ignoring deployment';
+        fi
+artifacts:
+  files:
+    - textminator.json

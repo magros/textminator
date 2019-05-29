@@ -1,0 +1,16 @@
+version: "3.2"
+services:
+  textminator:
+    image: ${DOCKER_IMAGE}
+    container_name: textminator
+    build:
+      context: .
+      dockerfile: Dockerfile
+      cache_from:
+        - ${DOCKER_IMAGE}
+    ports:
+      - "${APP_PORT}:3000"
+    volumes:
+      - .:/usr/src/app
+    environment:
+      NODE_ENV: ${APP_ENV}
