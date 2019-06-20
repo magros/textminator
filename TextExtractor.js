@@ -8,24 +8,30 @@ const pdfParser = new PDFParser();
 
 class TextExtractor {
 
+    static clearText(text){
+        console.log('cleaning text');
+        console.log(text);
+        return text.replace(/^a-zA-Záéíñóúü0-9_\-\/ \n#\+ÁÉÍÓÚÜÑ,.:;@%&\(\)\{\}\[\]àèùÀÈÙ"“”!ﬁ/, " ");
+    }
+
     static async catDoc(path) {
         let command = `catdoc ${path}`;
         let res = await exec(command);
-        return res.stdout;
+        return this.clearText(res.stdout);
     }
 
     static async pdfToText(path) {
-        let command = `pdftotext ${path}`;
+        let command = `pdftotext -enc "UTF-8" ${path}`;
         await exec(command);
         let res = await exec(`cat ${path}.txt`);
-        return res.stdout;
+        return this.clearText(res.stdout);
     }
 
     static async docx2Txt(path) {
         let command = `docx2txt ${path}`;
         await exec(command);
         let res = await exec(`cat ${path}.txt`);
-        return res.stdout;
+        return this.clearText(res.stdout);
     }
 
     static async pdfToPpm(path) {
@@ -36,13 +42,13 @@ class TextExtractor {
     static async odt2Txt(path) {
         let command = `odt2txt ${path} `;
         let res = await exec(command);
-        return res.stdout;
+        return this.clearText(res.stdout);
     }
 
     static async pdfMiner(path) {
         let command = `pdf2txt.py ${path} `;
         let res = await exec(command);
-        return res.stdout;
+        return this.clearText(res.stdout);
     }
 
     static async classify(path) {
@@ -109,7 +115,7 @@ class TextExtractor {
         console.log(res);
         let lines = res.Blocks.filter(block => block.BlockType === 'LINE');
         let textArray = lines.map(line => line.Text);
-        return textArray.join(' ');
+        return this.clearText(textArray.join(' '));
     }
 
     static async getPDFPageCount(path) {

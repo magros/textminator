@@ -8,7 +8,7 @@ phases:
     commands:
       - echo "Login with ecr credentials"
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION  --no-include-email)
-#      - docker pull $DOCKER_IMAGE:latest
+      - docker pull $DOCKER_IMAGE:latest
   build:
     commands:
       - echo "Building images..."
