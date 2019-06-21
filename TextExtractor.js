@@ -15,7 +15,7 @@ class TextExtractor {
     }
 
     static async catDoc(path) {
-        let command = `catdoc ${path}`;
+        let command = `catdoc -d "UTF-8" ${path}`;
         let res = await exec(command);
         return this.clearText(res.stdout);
     }
@@ -40,7 +40,7 @@ class TextExtractor {
     }
 
     static async odt2Txt(path) {
-        let command = `odt2txt ${path} `;
+        let command = `odt2txt --encoding="UTF-8" ${path} `;
         let res = await exec(command);
         return this.clearText(res.stdout);
     }
