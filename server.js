@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
 const textExtractor = require('./TextExtractor');
+const Sentry = require('@sentry/node');
+Sentry.init({dsn: process.env.SENTRY_DSN});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -64,6 +66,7 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
             tool
         });
     } catch (e) {
+        Sentry.captureException(e);
         console.log(e);
         res.send({
             message: e.message,

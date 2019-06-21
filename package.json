@@ -12,6 +12,7 @@
   "author": "Marco Godinez <iron-rocks@hotmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@sentry/node": "^5.4.3",
     "aws-sdk": "^2.463.0",
     "body-parser": "^1.19.0",
     "child-process-promise": "^2.2.1",
