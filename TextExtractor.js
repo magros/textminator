@@ -5,17 +5,16 @@ const VisualRecognitionV3 = require('ibm-watson/visual-recognition/v3');
 const AWS = require('aws-sdk');
 const PDFParser = require('pdf2json');
 const pdfParser = new PDFParser();
+require('dotenv').config();
 
 class TextExtractor {
 
     static clearText(text){
-        console.log('cleaning text');
-        console.log(text);
         return text.replace(/^a-zA-Záéíñóúü0-9_\-\/ \n#\+ÁÉÍÓÚÜÑ,.:;@%&\(\)\{\}\[\]àèùÀÈÙ"“”!ﬁ/, " ");
     }
 
     static async catDoc(path) {
-        let command = `catdoc -d "UTF-8" ${path}`;
+        let command = `catdoc -dutf-8 ${path}`;
         let res = await exec(command);
         return this.clearText(res.stdout);
     }
@@ -58,12 +57,12 @@ class TextExtractor {
         let visualRecognition = new VisualRecognitionV3({
             url: 'https://gateway.watsonplatform.net/visual-recognition/api',
             version: '2018-03-19',
-            iam_apikey: 'fsK29BczFiknCw50h-Buyvz-IrP8u-RF_ufHFHnfEq4j',
+            iam_apikey: process.env.WATSON_API_KEY,
         });
 
         let params = {
             images_file: fs.createReadStream(`${path}.jpg`),
-            classifier_ids: ['pdfcolumns_976497148'],
+            classifier_ids: [process.env.WATSON_CLASSIFIER_ID],
             threshold: '0.0'
         };
 
@@ -88,8 +87,8 @@ class TextExtractor {
         let textract = new AWS.Textract({
             region: "us-east-1",
             credentials: {
-                accessKeyId: "AKIA55SAONIS4YT5OS7A",
-                secretAccessKey: "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"
+                accessKeyId: process.env.AWS_ACCESS_KEY,
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
             }
         });
 

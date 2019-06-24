@@ -58,7 +58,8 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
             default:
                 throw new Error(`Cannot find tool for ${mimeType}`);
         }
-        res.send({
+        res.set({ 'content-type': 'application/json; charset=utf-8' });
+        res.json({
             text,
             status: "success",
             mimeType,
