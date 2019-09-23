@@ -9,8 +9,9 @@ require('dotenv').config();
 
 class TextExtractor {
 
-    static clearText(text){
-        return text.replace(/^a-zA-Záéíñóúü0-9_\-\/ \n#\+ÁÉÍÓÚÜÑ,.:;@%&\(\)\{\}\[\]àèùÀÈÙ"“”!ﬁ/, " ");
+    static clearText(text) {
+        text = text.replace(/\n+/g, '\n').replace(/[ ]+/g, ' ').replace(/,/g, ' , ')
+        return text.replace(/[^a-zA-Záéíñóúü0-9_\-\/ \t\n#\+ÁÉÍÓÚÜÑ,\.:;@%&\(\)\{\}\[\]àèùÀÈÙ\"“”!ﬁ]/igm, " ");
     }
 
     static async catDoc(path) {
@@ -119,7 +120,7 @@ class TextExtractor {
 
     static async getPDFPageCount(path) {
         return new Promise((resolve, reject) => {
-            pdfParser.on('pdfParser_dataReady', function(data) {
+            pdfParser.on('pdfParser_dataReady', function (data) {
                 const pages = (pdfParser.PDFJS && pdfParser.PDFJS.pdfDocument && pdfParser.PDFJS.pdfDocument.numPages) || data.formImage.Pages.length;
                 return resolve(pages);
             });
@@ -128,6 +129,26 @@ class TextExtractor {
             });
             pdfParser.loadPDF(path);
         });
+    }
+
+    static cleanText(text) {
+
+        const r2 = /^[\w@ñÑáéíóúÁÉÍÓÚ]\n/igm
+        let newToken = 0;
+        let response = '';
+        let match;
+
+        console.log(text);
+
+        while ((match = r2.exec(text))) {
+            response += text.substring(newToken, match.index) + match[0].replace('\n', '');
+            newToken = r2.lastIndex
+        }
+        if (response.length === 0) {
+            return text.replace(/[ ]+/g, ' ').replace(/,/g, ' , ');
+        }
+        response = response.replace(/\n+/g, ' ').replace(/[ ]+/g, ' ').replace(/,/g, ' , ')
+        return response
     }
 
 }

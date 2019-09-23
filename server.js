@@ -31,6 +31,8 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
                 typePdf = await textExtractor.classify(path);
                 tool = typePdf === "onecolumn" ? "pdftotext" : "pdfminer";
                 text = tool === "pdftotext" ? await textExtractor.pdfToText(path) : await textExtractor.pdfMiner(path);
+                text = tool === 'pdfminer' ? textExtractor.cleanText(text) : text;
+
                 if(text.replace("\n").replace("\t").length < 5){
                     await textExtractor.pdfToPpm(path);
                     text = await textExtractor.textract(path+".jpg");
