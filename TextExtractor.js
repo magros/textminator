@@ -144,6 +144,7 @@ class TextExtractor {
             response += text.substring(newToken, match.index) + match[0].replace('\n', '');
             newToken = r2.lastIndex
         }
+        response += text.substring(newToken, text.length - 1 );
         if (response.length === 0) {
             return text.replace(/[ ]+/g, ' ').replace(/,/g, ' , ');
         }
