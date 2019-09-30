@@ -10,8 +10,10 @@ require('dotenv').config();
 class TextExtractor {
 
     static clearText(text) {
+        text = this.deleteExtraSpaces(text);
         text = text.replace(/\n+/g, '\n').replace(/[ ]+/g, ' ').replace(/,/g, ' , ')
-        return text.replace(/[^a-zA-Záéíñóúü0-9_\-\/ \t\n#\+ÁÉÍÓÚÜÑ,\.:;@%&\(\)\{\}\[\]àèùÀÈÙ\"“”!ﬁ]/igm, " ");
+        text = text.replace(/[^a-zA-Záéíñóúü0-9_\-\/ \t\n#\+ÁÉÍÓÚÜÑ,\.:;@%&\(\)\{\}\[\]àèùÀÈÙ\"“”!ﬁ]/igm, " ");
+        return text;
     }
 
     static async catDoc(path) {
@@ -133,23 +135,60 @@ class TextExtractor {
 
     static cleanText(text) {
 
-        const r2 = /^[\w@ñÑáéíóúÁÉÍÓÚ]\n/igm
+        const r2 = /(^[\w@ñÑáéíóúÁÉÍÓÚ]\n)|(\n[\w@ñÑáéíóúÁÉÍÓÚ]\ )/gim
         let newToken = 0;
         let response = '';
         let match;
 
-        console.log(text);
+        // console.log(text);
 
         while ((match = r2.exec(text))) {
             response += text.substring(newToken, match.index) + match[0].replace('\n', '');
             newToken = r2.lastIndex
         }
-        response += text.substring(newToken, text.length - 1 );
+        response += text.substring(newToken, text.length - 1);
         if (response.length === 0) {
             return text.replace(/[ ]+/g, ' ').replace(/,/g, ' , ');
         }
         response = response.replace(/\n+/g, ' ').replace(/[ ]+/g, ' ').replace(/,/g, ' , ')
         return response
+    }
+
+    static deleteExtraSpaces(text) {
+        let response = '';
+        let tokenbyEOL = text.replace(/\(cid:\d+\)/igm,'').split('\n')
+        tokenbyEOL.forEach(function(value) {
+            let r2 = /\ [\w@ñÑáéíóúÁÉÍÓÚ]/igm
+            let newToken = 0;
+            let len = value.length;
+            let spaceCount = (value.split(" ").length - 1);
+            let metric = spaceCount / len + .00000000000000000000001;
+            console.log(value)
+            console.log(metric)
+            let match
+
+            if (metric >= .27 && !isNaN(metric)) {
+                while ((match = r2.exec(value))) {
+                    //console.log(match[0])
+                    response += value.substring(newToken, match.index) + match[0].replace(' ', '');
+                    newToken = r2.lastIndex
+                }
+                console.log('val'+(value.length-1)+' '+newToken+' eol');
+                if ((value.length - 1) >= newToken) {
+                    try{
+                        response += value.substring(newToken,value.length);//charAt(value.length - 1);
+                    }
+                    catch (e){
+                        console.log('un error tio');
+
+                    }
+                }
+            } else {
+                response += value
+            }
+            response += '\n'
+        });
+        return response.replace(/\n+/g, '\n').replace(/\ +/g, ' ');
     }
 
 }
