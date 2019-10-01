@@ -6,13 +6,19 @@ const AWS = require('aws-sdk');
 const PDFParser = require('pdf2json');
 const pdfParser = new PDFParser();
 require('dotenv').config();
+const XRegExp = require('xregexp');
 
 class TextExtractor {
 
     static clearText(text) {
+        const date = XRegExp(`[\u0301]`, 'x');
+        const dateI = XRegExp(`[\u0131]`, 'x');
+
         text = this.deleteExtraSpaces(text);
         text = text.replace(/\n+/g, '\n').replace(/[ ]+/g, ' ').replace(/,/g, ' , ')
-        text = text.replace(/[^a-zA-Záéíñóú'ü0-9_\w\-\/ \t\n#\+ÁÉÍÓÚÜÑ,\.:;@%&\(\)\{\}\[\]àèùÀÈÙ\"“”!ﬁ]/igm, " ");
+        text = XRegExp.replace(text, date, '');
+        text = XRegExp.replace(text, dateI, 'í');
+        text = text.replace(/[^a-zA-Záéíı́ñóú́'ü0-9_\w\-\/\t\n#\+ÁÉÍÓÚÜÑ,\.:;@%&\(\)\{\}\[\]àèùÀÈÙ\"“”!ﬁ]/gm, " ");
         return text;
     }
 
@@ -163,8 +169,8 @@ class TextExtractor {
             let len = value.length;
             let spaceCount = (value.split(" ").length - 1);
             let metric = spaceCount / len + .00000000000000000000001;
-            console.log(value)
-            console.log(metric)
+            // console.log(value)
+            // console.log(metric)
             let match
 
             if (metric >= .27 && !isNaN(metric)) {
