@@ -12,7 +12,7 @@ class TextExtractor {
     static clearText(text) {
         text = this.deleteExtraSpaces(text);
         text = text.replace(/\n+/g, '\n').replace(/[ ]+/g, ' ').replace(/,/g, ' , ')
-        text = text.replace(/[^a-zA-Záéíñóú'ü0-9_\-\/ \t\n#\+ÁÉÍÓÚÜÑ,\.:;@%&\(\)\{\}\[\]àèùÀÈÙ\"“”!ﬁ]/igm, " ");
+        text = text.replace(/[^a-zA-Záéíñóú'ü0-9_\w\-\/ \t\n#\+ÁÉÍÓÚÜÑ,\.:;@%&\(\)\{\}\[\]àèùÀÈÙ\"“”!ﬁ]/igm, " ");
         return text;
     }
 
