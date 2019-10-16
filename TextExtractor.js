@@ -146,8 +146,6 @@ class TextExtractor {
         let response = '';
         let match;
 
-        // console.log(text);
-
         while ((match = r2.exec(text))) {
             response += text.substring(newToken, match.index) + match[0].replace('\n', '');
             newToken = r2.lastIndex
@@ -169,24 +167,20 @@ class TextExtractor {
             let len = value.length;
             let spaceCount = (value.split(" ").length - 1);
             let metric = spaceCount / len + .00000000000000000000001;
-            // console.log(value)
-            // console.log(metric)
             let match
 
             if (metric >= .27 && !isNaN(metric)) {
                 while ((match = r2.exec(value))) {
-                    //console.log(match[0])
                     response += value.substring(newToken, match.index) + match[0].replace(' ', '');
                     newToken = r2.lastIndex
                 }
-                console.log('val'+(value.length-1)+' '+newToken+' eol');
+                // console.log('val'+(value.length-1)+' '+newToken+' eol');
                 if ((value.length - 1) >= newToken) {
                     try{
-                        response += value.substring(newToken,value.length);//charAt(value.length - 1);
+                        response += value.substring(newToken,value.length);
                     }
                     catch (e){
                         console.log('un error tio');
-
                     }
                 }
             } else {

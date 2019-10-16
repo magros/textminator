@@ -5,6 +5,7 @@ const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
 const textExtractor = require('./TextExtractor');
 const Sentry = require('@sentry/node');
+const LanguageDetector = require('./LanguageDetector')
 Sentry.init({dsn: process.env.SENTRY_DSN});
 
 app.use(bodyParser.json());
@@ -59,13 +60,15 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
             default:
                 throw new Error(`Cannot find tool for ${mimeType}`);
         }
+        const language = LanguageDetector(text)
         res.set({ 'content-type': 'application/json; charset=utf-8' });
         res.json({
             text,
             status: "success",
             mimeType,
             typePdf,
-            tool
+            tool,
+            language
         });
     } catch (e) {
         Sentry.captureException(e);
