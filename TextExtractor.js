@@ -7,6 +7,7 @@ const PDFParser = require('pdf2json');
 const pdfParser = new PDFParser();
 require('dotenv').config();
 const XRegExp = require('xregexp');
+const path = require('path');
 
 class TextExtractor {
 
@@ -191,6 +192,20 @@ class TextExtractor {
         return response.replace(/\n+/g, '\n').replace(/\ +/g, ' ');
     }
 
+    static deleteFiles(){
+
+        const directory = 'uploads';
+
+        fs.readdir(directory, (err, files) => {
+            if (err) throw err;
+
+            for (const file of files) {
+                fs.unlink(path.join(directory, file), err => {
+                    if (err) throw err;
+                });
+            }
+        });
+    }
 }
 
 module.exports = TextExtractor;
