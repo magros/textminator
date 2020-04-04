@@ -29,7 +29,8 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
 
         switch (mimeType) {
             case "application/pdf":
-                typePdf = await textExtractor.classify(path)
+                //typePdf = await textExtractor.classify(path)
+		typePdf = "onecolumn"
                 tool = typePdf === "onecolumn" ? "pdftotext" : "pdfminer"
                 text = tool === "pdftotext" ? await textExtractor.pdfToText(path) : await textExtractor.pdfMiner(path)
                 text = tool === 'pdfminer' ? textExtractor.cleanText(text) : text
