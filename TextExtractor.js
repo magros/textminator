@@ -55,7 +55,7 @@ class TextExtractor {
     }
 
     static async pdfMiner(path) {
-        let command = `pdf2txt.py ${path} `;
+        let command = `python /usr/local/bin/pdf2txt.py ${path} `;
         let res = await exec(command);
         return this.clearText(res.stdout);
     }

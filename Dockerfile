@@ -1,6 +1,6 @@
 FROM node:10
 RUN apt-get update \
-     && apt-get install -y python3 curl unoconv libreoffice poppler-utils catdoc docx2txt odt2txt --no-install-recommends \
+     && apt-get install -y python3 python3-pip curl unoconv libreoffice poppler-utils catdoc docx2txt odt2txt \
      && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py \
      && pip install pdfminer-six \
      && rm -rf /var/lib/apt/lists/*

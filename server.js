@@ -20,7 +20,7 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
     console.log('request received')
     try {
         let file = req.file
-        if(!file) throw new Error("File must be provided")
+        if (!file) throw new Error("File must be provided")
         let path = req.file.path
         let tool
         let mimeType = file.mimetype
@@ -29,15 +29,14 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
 
         switch (mimeType) {
             case "application/pdf":
-                //typePdf = await textExtractor.classify(path)
-		typePdf = "onecolumn"
-                tool = typePdf === "onecolumn" ? "pdftotext" : "pdfminer"
+                typePdf = await textExtractor.classify(path)
+                tool = typePdf === "twocolumn" ? "pdftotext" : "pdfminer"
                 text = tool === "pdftotext" ? await textExtractor.pdfToText(path) : await textExtractor.pdfMiner(path)
                 text = tool === 'pdfminer' ? textExtractor.cleanText(text) : text
 
-                if(text.replace("\n").replace("\t").length < 5){
+                if (text.replace("\n").replace("\t").length < 5) {
                     await textExtractor.pdfToPpm(path)
-                    text = await textExtractor.textract(path+".jpg")
+                    text = await textExtractor.textract(path + ".jpg")
                     tool = "textract"
                 }
                 break
@@ -64,7 +63,7 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
 
         const language = LanguageDetector(text)
         textExtractor.deleteFiles()
-        res.set({ 'content-type': 'application/json; charset=utf-8' })
+        res.set({'content-type': 'application/json; charset=utf-8'})
         res.json({
             text,
             status: "success",
@@ -87,7 +86,7 @@ app.post('/extract-text-new', upload.single('file'), async function (req, res) {
     console.log('request received')
     try {
         let file = req.file
-        if(!file) throw new Error("File must be provided")
+        if (!file) throw new Error("File must be provided")
         let path = req.file.path
         let tool
         let mimeType = file.mimetype
@@ -101,9 +100,9 @@ app.post('/extract-text-new', upload.single('file'), async function (req, res) {
                 text = tool === "pdftotext" ? await textExtractor.pdfToText(path) : await textExtractor.pdfMiner(path)
                 text = tool === 'pdfminer' ? textExtractor.cleanText(text) : text
 
-                if(text.replace("\n").replace("\t").length < 5){
+                if (text.replace("\n").replace("\t").length < 5) {
                     await textExtractor.pdfToPpm(path)
-                    text = await textExtractor.textract(path+".jpg")
+                    text = await textExtractor.textract(path + ".jpg")
                     tool = "textract"
                 }
                 break
@@ -131,7 +130,7 @@ app.post('/extract-text-new', upload.single('file'), async function (req, res) {
         const language = LanguageDetector(text)
         const entities = await ObjectDetection(path, mimeType)
         textExtractor.deleteFiles()
-        res.set({ 'content-type': 'application/json; charset=utf-8' })
+        res.set({'content-type': 'application/json; charset=utf-8'})
         res.json({
             text,
             status: "success",
