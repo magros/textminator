@@ -1,6 +1,11 @@
 const rp = require('request-promise')
 const {exec} = require('child-process-promise')
 const fs = require('fs')
+const classExp = 2
+const classEdu = 4
+const classSkill = 6
+const classLang = 9
+const threshold = 0.40
 
 const getEntities = async file => rp({
     method: 'POST',
@@ -16,6 +21,32 @@ const getEntities = async file => rp({
     },
 })
 
+const buildXML = function (entities, classnumber) {
+    return entities.filter(entity => entity.classnumber == classnumber && entity.prob >= threshold)
+        .map((entity) => `\n\n<bazungalagorda>\n ${entity.text} \n</bazungalagorda>\n`)
+        .join('\n')
+}
+
+const parser = function (entities) {
+    console.log('parsing')
+
+    let experiences = ''
+    let educations = ''
+    let skills = ''
+    let languages = ''
+
+    for (const box of entities) {
+        entities = box.all
+        experiences += buildXML(entities, classExp)
+        educations += buildXML(entities, classEdu)
+        skills += buildXML(entities, classSkill)
+        languages += buildXML(entities, classLang)
+    }
+    return `<experiences>\n${experiences}\n</experiences>\n\n
+            <educations>\n${educations}\n</educations>\n\n
+            <skills>\n${skills}\n</skills>\n\n
+            <languages>\n${languages}\n</languages>\n\n`;
+}
 
 module.exports = async (path, mimeType) => {
     console.log(mimeType)
@@ -39,11 +70,10 @@ module.exports = async (path, mimeType) => {
         promises.push(new Promise((resolve, reject) => {
             console.log('requesting entities ')
             getEntities(`${path}-${i}.jpg`).then(function (response) {
-                console.log(response)
                 resolve(JSON.parse(response))
             }).catch(() => reject)
         }))
     }
-
-    return await Promise.all(promises);
+    const response = await Promise.all(promises)
+    return parser(response)
 }
