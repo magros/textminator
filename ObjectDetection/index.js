@@ -61,7 +61,7 @@ module.exports = async (path, mimeType) => {
     let command = `pdftoppm -r 300 -jpeg ${path} ${path}`
     await exec(command)
     const fileName = path.split('/')[1]
-    let pages = await exec(`ls uploads | grep -E ${fileName}.*jpg | wc -l`)
+    let pages = await exec(`ls uploads | grep -E ${fileName}.*-.*jpg | wc -l`)
     pages = pages.stdout
     let promises = []
 
