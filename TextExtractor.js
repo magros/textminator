@@ -91,7 +91,7 @@ class TextExtractor {
 
     static async textract(path) {
 
-        let bytes = fs.readFileSync(`${path}`, 'base64');
+       /* let bytes = fs.readFileSync(`${path}`, 'base64');
         const buffer = new Buffer(bytes, 'base64');
 
         let textract = new AWS.Textract({
@@ -124,7 +124,8 @@ class TextExtractor {
         console.log(res);
         let lines = res.Blocks.filter(block => block.BlockType === 'LINE');
         let textArray = lines.map(line => line.Text);
-        return this.clearText(textArray.join(' '));
+        return this.clearText(textArray.join(' '));*/
+        return ''
     }
 
     static async getPDFPageCount(path) {
