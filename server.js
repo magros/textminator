@@ -30,7 +30,7 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
         switch (mimeType) {
             case "application/pdf":
                 typePdf = await textExtractor.classify(path)
-                tool = typePdf === "multiplecolumns" ?  "pdfminer" : "pdftotext"
+                tool = typePdf === "multiplecolumns" ? "pdfminer" : "pdftotext"
                 text = tool === "pdftotext" ? await textExtractor.pdfToText(path) : await textExtractor.pdfMiner(path)
                 text = tool === 'pdfminer' ? textExtractor.cleanText(text) : text
 
@@ -62,7 +62,7 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
         }
 
         const language = LanguageDetector(text)
-        const entities = typePdf === "multiplecolumns" ?  await ObjectDetection(path, mimeType) : null
+        const entities = typePdf === "multiplecolumns" ? await ObjectDetection(path, mimeType) : null
         textExtractor.deleteFiles()
         res.set({'content-type': 'application/json; charset=utf-8'})
         res.json({
@@ -83,6 +83,18 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
         })
 
     }
+})
+app.post('/classify', upload.single('file'), async function (req, res) {
+    let file = req.file
+    if (!file) throw new Error("File must be provided")
+    let path = req.file.path
+    let mimeType = file.mimetype
+    const typePdf = mimeType === 'application/pdf' ? await textExtractor.classify(path) : ''
+    res.set({'content-type': 'application/json; charset=utf-8'})
+    res.json({
+        typePdf,
+        status: "success",
+    })
 })
 const server = app.listen(3000, function () {
     console.log('Example app listening on port 3000!')
