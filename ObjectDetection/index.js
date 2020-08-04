@@ -6,10 +6,11 @@ const classEdu = 4
 const classSkill = 6
 const classLang = 9
 const threshold = 0.40
+require('dotenv').config();
 
 const getEntities = async file => rp({
     method: 'POST',
-    uri: 'http://cv-detection-lb-986057020.us-west-2.elb.amazonaws.com/queryimg',
+    uri: process.env.OBJECT_DETECTION_URL,
     formData: {
         file: {
             value: fs.createReadStream(file),
