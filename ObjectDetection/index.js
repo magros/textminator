@@ -24,7 +24,7 @@ const getEntities = async file => rp({
 
 const buildXML = function (entities, classnumber) {
     return entities.filter(entity => entity.classnumber == classnumber && entity.prob >= threshold)
-        .map((entity) => `\n\n<bazungalagorda>\n ${entity.text} \n</bazungalagorda>\n`)
+        .map((entity) => `\n\n<trennzeichen>\n\n ${entity.text} \n\n</trennzeichen>\n\n`)
         .join('\n')
 }
 
