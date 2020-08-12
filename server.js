@@ -90,6 +90,7 @@ app.post('/classify', upload.single('file'), async function (req, res) {
     let path = req.file.path
     let mimeType = file.mimetype
     const typePdf = mimeType === 'application/pdf' ? await textExtractor.classify(path) : ''
+    textExtractor.deleteFiles()
     res.set({'content-type': 'application/json; charset=utf-8'})
     res.json({
         typePdf,
