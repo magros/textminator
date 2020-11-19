@@ -12,12 +12,14 @@ phases:
   build:
     commands:
       - echo "Building images..."
+      - echo $DOCKER_HUB_PASSWORD | docker login --username $DOCKER_HUB_USERNAME --password-stdin
       - docker-compose build
   post_build:
     commands:
       - if [ $CODEBUILD_BUILD_SUCCEEDING = 1 ];
         then
         echo "Pushing images to ecs docker repository";
+        $(aws ecr get-login --region $AWS_DEFAULT_REGION  --no-include-email);
         docker-compose push;
         printf '[{"name":"textminator","imageUri":"%s"}]' $DOCKER_IMAGE:latest > textminator.json;
         else
