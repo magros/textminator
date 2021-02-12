@@ -86,6 +86,7 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
 })
 app.post('/classify', upload.single('file'), async function (req, res) {
     let file = req.file
+    console.log('inside request')
     if (!file) throw new Error("File must be provided")
     let path = req.file.path
     let mimeType = file.mimetype

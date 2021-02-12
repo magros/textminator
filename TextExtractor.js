@@ -2,6 +2,7 @@ const {exec} = require('child-process-promise');
 // const rp = require('request-promise');
 const fs = require('fs');
 const VisualRecognitionV3 = require('ibm-watson/visual-recognition/v3');
+const {IamAuthenticator} = require('ibm-watson/auth');
 const AWS = require('aws-sdk');
 const PDFParser = require('pdf2json');
 const pdfParser = new PDFParser();
@@ -64,21 +65,27 @@ class TextExtractor {
 
         await this.pdfToPpm(path);
 
-        let visualRecognition = new VisualRecognitionV3({
-            url: 'https://gateway.watsonplatform.net/visual-recognition/api',
+        console.log('classifying')
+
+        const visualRecognition = new VisualRecognitionV3({
             version: '2018-03-19',
-            iam_apikey: process.env.WATSON_API_KEY,
+            authenticator: new IamAuthenticator({
+                apikey: process.env.WATSON_API_KEY,
+            }),
+            serviceUrl: process.env.WATSON_SERVICE_URL,
         });
 
+
         let params = {
-            images_file: fs.createReadStream(`${path}.jpg`),
-            classifier_ids: [process.env.WATSON_CLASSIFIER_ID],
+            imagesFile: fs.createReadStream(`${path}.jpg`),
+            classifierIds: [process.env.WATSON_CLASSIFIER_ID],
             threshold: '0.0'
         };
 
         let res = await visualRecognition.classify(params);
 
-        let classes = res.images[0].classifiers[0].classes;
+
+        let classes = res.result.images[0].classifiers[0].classes;
 
         let oneColumn = classes.find((obj) => obj.class === "onecolumn");
         let multipleColumns = classes.find((obj) => obj.class === "multiplecolumns");
@@ -91,40 +98,40 @@ class TextExtractor {
 
     static async textract(path) {
 
-       /* let bytes = fs.readFileSync(`${path}`, 'base64');
-        const buffer = new Buffer(bytes, 'base64');
+        /* let bytes = fs.readFileSync(`${path}`, 'base64');
+         const buffer = new Buffer(bytes, 'base64');
 
-        let textract = new AWS.Textract({
-            region: "us-east-1",
-            credentials: {
-                accessKeyId: process.env.AWS_ACCESS_KEY,
-                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-            }
-        });
+         let textract = new AWS.Textract({
+             region: "us-east-1",
+             credentials: {
+                 accessKeyId: process.env.AWS_ACCESS_KEY,
+                 secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+             }
+         });
 
-        let params = {
-            Document: {
-                Bytes: buffer
-            },
-            FeatureTypes: [
-                "TABLES",
-                "FORMS"
-            ],
-        };
+         let params = {
+             Document: {
+                 Bytes: buffer
+             },
+             FeatureTypes: [
+                 "TABLES",
+                 "FORMS"
+             ],
+         };
 
-        console.log('sending params');
+         console.log('sending params');
 
-        let res = await new Promise(function (resolve, reject) {
+         let res = await new Promise(function (resolve, reject) {
 
-            textract.analyzeDocument(params, (err, data) => {
-                err ? reject(err) : resolve(data);
-            });
+             textract.analyzeDocument(params, (err, data) => {
+                 err ? reject(err) : resolve(data);
+             });
 
-        });
-        console.log(res);
-        let lines = res.Blocks.filter(block => block.BlockType === 'LINE');
-        let textArray = lines.map(line => line.Text);
-        return this.clearText(textArray.join(' '));*/
+         });
+         console.log(res);
+         let lines = res.Blocks.filter(block => block.BlockType === 'LINE');
+         let textArray = lines.map(line => line.Text);
+         return this.clearText(textArray.join(' '));*/
         return ''
     }
 
@@ -162,8 +169,8 @@ class TextExtractor {
 
     static deleteExtraSpaces(text) {
         let response = '';
-        let tokenbyEOL = text.replace(/\(cid:\d+\)/igm,'').split('\n')
-        tokenbyEOL.forEach(function(value) {
+        let tokenbyEOL = text.replace(/\(cid:\d+\)/igm, '').split('\n')
+        tokenbyEOL.forEach(function (value) {
             let r2 = /\ [\w@ñÑáéíóúÁÉÍÓÚ]/igm
             let newToken = 0;
             let len = value.length;
@@ -178,10 +185,9 @@ class TextExtractor {
                 }
                 // console.log('val'+(value.length-1)+' '+newToken+' eol');
                 if ((value.length - 1) >= newToken) {
-                    try{
-                        response += value.substring(newToken,value.length);
-                    }
-                    catch (e){
+                    try {
+                        response += value.substring(newToken, value.length);
+                    } catch (e) {
                         console.log('un error tio');
                     }
                 }
@@ -193,7 +199,7 @@ class TextExtractor {
         return response.replace(/\n+/g, '\n').replace(/\ +/g, ' ');
     }
 
-    static deleteFiles(){
+    static deleteFiles() {
 
         const directory = 'uploads';
 
