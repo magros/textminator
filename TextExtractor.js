@@ -9,6 +9,7 @@ const pdfParser = new PDFParser();
 require('dotenv').config();
 const XRegExp = require('xregexp');
 const path = require('path');
+const rp = require('request-promise')
 
 class TextExtractor {
 
@@ -65,32 +66,21 @@ class TextExtractor {
 
         await this.pdfToPpm(path);
 
-        console.log('classifying')
+        const fileEncoded = fs.readFileSync(`${path}.jpg`, {encoding: 'base64'})
+            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
 
-        const visualRecognition = new VisualRecognitionV3({
-            version: '2018-03-19',
-            authenticator: new IamAuthenticator({
-                apikey: process.env.WATSON_API_KEY,
-            }),
-            serviceUrl: process.env.WATSON_SERVICE_URL,
-        });
+        let documentKind = {}
 
+        try {
+            documentKind = await rp({
+                method: 'POST',
+                uri: "https://6kzgzk8nwe.execute-api.us-west-2.amazonaws.com/dev/columnclassifier",
+                body: {"b64": [fileEncoded]},
+                json: true
+            })
+        } catch (e) {}
 
-        let params = {
-            imagesFile: fs.createReadStream(`${path}.jpg`),
-            classifierIds: [process.env.WATSON_CLASSIFIER_ID],
-            threshold: '0.0'
-        };
-
-        let res = await visualRecognition.classify(params);
-
-
-        let classes = res.result.images[0].classifiers[0].classes;
-
-        let oneColumn = classes.find((obj) => obj.class === "onecolumn");
-        let multipleColumns = classes.find((obj) => obj.class === "multiplecolumns");
-
-        if (multipleColumns.score > oneColumn.score) {
+        if (documentKind.responses) {
             return "multiplecolumns";
         }
         return "onecolumn";

@@ -33,12 +33,6 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
                 tool = typePdf === "multiplecolumns" ? "pdfminer" : "pdftotext"
                 text = tool === "pdftotext" ? await textExtractor.pdfToText(path) : await textExtractor.pdfMiner(path)
                 text = tool === 'pdfminer' ? textExtractor.cleanText(text) : text
-
-                if (text.replace("\n").replace("\t").length < 5) {
-                    await textExtractor.pdfToPpm(path)
-                    text = await textExtractor.textract(path + ".jpg")
-                    tool = "textract"
-                }
                 break
             case "application/msword":
                 tool = "catdoc"
@@ -51,11 +45,6 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
             case "application/vnd.oasis.opendocument.text":
                 text = await textExtractor.odt2Txt(path)
                 tool = "odt2txt"
-                break
-            case "image/png":
-            case "image/jpeg":
-                text = await textExtractor.textract(path)
-                tool = "textract"
                 break
             default:
                 throw new Error(`Cannot find tool for ${mimeType}`)
