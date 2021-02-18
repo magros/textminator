@@ -69,7 +69,7 @@ class TextExtractor {
         const fileEncoded = fs.readFileSync(`${path}.jpg`, {encoding: 'base64'})
             .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
 
-        let documentKind = {}
+        let documentKind = {responses: 1}
 
         try {
             documentKind = await rp({
