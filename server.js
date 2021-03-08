@@ -32,7 +32,7 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
                 typePdf = await textExtractor.classify(path)
                 tool = "pdftotext"
                 text = textExtractor.pdfToText(path)
-                text = textExtractor.cleanText(text)
+                // text = textExtractor.cleanText(text)
                 break
             case "application/msword":
                 tool = "catdoc"
