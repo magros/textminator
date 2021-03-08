@@ -37,7 +37,7 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
                 text = await textExtractor.pdfToText(path)
                 console.timeEnd("extractText")
                 tool = "pdftotext"
-                // text = textExtractor.cleanText(text)
+                text = textExtractor.cleanText(text)
                 break
             case "application/msword":
                 tool = "catdoc"
