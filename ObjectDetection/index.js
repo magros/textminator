@@ -67,12 +67,12 @@ module.exports = async (path, mimeType) => {
     let promises = []
 
     for (let i = 1; i <= pages; i++) {
-        console.log(`${path}-${i}.jpg`)
-        console.log(process.env.OBJECT_DETECTION_URL)
 
         promises.push(new Promise((resolve, reject) => {
-            console.log('requesting entities ')
+            console.log(`requesting entities ${path}-${i}.jpg`)
+            console.time(`image${i}`)
             getEntities(`${path}-${i}.jpg`).then(function (response) {
+                console.timeEnd(`image${i}`)
                 resolve(JSON.parse(response))
             }).catch(() => reject)
         }))

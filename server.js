@@ -29,9 +29,14 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
 
         switch (mimeType) {
             case "application/pdf":
+                console.time("classify")
                 typePdf = await textExtractor.classify(path)
-                tool = "pdftotext"
+                console.timeEnd("classify")
+
+                console.time("extractText")
                 text = textExtractor.pdfToText(path)
+                console.timeEnd("extractText")
+                tool = "pdftotext"
                 // text = textExtractor.cleanText(text)
                 break
             case "application/msword":
@@ -51,7 +56,9 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
         }
 
         const language = LanguageDetector(text)
+        console.time("objectDetection")
         const entities = typePdf === "multiplecolumns" ? await ObjectDetection(path, mimeType) : null
+        console.timeEnd("objectDetection")
         textExtractor.deleteFiles()
         res.set({'content-type': 'application/json; charset=utf-8'})
         res.json({
