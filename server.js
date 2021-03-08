@@ -34,7 +34,7 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
                 console.timeEnd("classify")
 
                 console.time("extractText")
-                text = textExtractor.pdfToText(path)
+                text = await textExtractor.pdfToText(path)
                 console.timeEnd("extractText")
                 tool = "pdftotext"
                 // text = textExtractor.cleanText(text)
