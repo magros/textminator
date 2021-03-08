@@ -30,9 +30,9 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
         switch (mimeType) {
             case "application/pdf":
                 typePdf = await textExtractor.classify(path)
-                tool = typePdf === "multiplecolumns" ? "pdfminer" : "pdftotext"
-                text = tool === "pdftotext" ? await textExtractor.pdfToText(path) : await textExtractor.pdfMiner(path)
-                text = tool === 'pdfminer' ? textExtractor.cleanText(text) : text
+                tool = "pdftotext"
+                text = textExtractor.pdfToText(path)
+                text = textExtractor.cleanText(text)
                 break
             case "application/msword":
                 tool = "catdoc"
