@@ -10,7 +10,7 @@ require('dotenv').config();
 
 const getEntities = async file => rp({
     method: 'POST',
-    uri: process.env.OBJECT_DETECTION_URL,
+    uri: getEndpoint(),
     formData: {
         file: {
             value: fs.createReadStream(file),
@@ -21,6 +21,15 @@ const getEntities = async file => rp({
         }
     },
 })
+
+const getEndpoint = () => {
+    const random = Math.floor(Math.random() * (10 - 1)) + 1
+
+    if(random > 2){
+        return process.env.OBJECT_DETECTION_URL;
+    }
+    return 'https://39aphlu1wk.execute-api.us-west-2.amazonaws.com/dev/queryimg';
+}
 
 const buildXML = function (entities, classnumber) {
     return entities.filter(entity => entity.classnumber == classnumber && entity.prob >= threshold)
