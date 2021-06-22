@@ -25,7 +25,7 @@ const getEntities = async file => rp({
 const getEndpoint = () => {
     const random = Math.floor(Math.random() * (10 - 1)) + 1
 
-    if(random > 2){
+    if(random > 5){
         return process.env.OBJECT_DETECTION_URL;
     }
     return 'https://39aphlu1wk.execute-api.us-west-2.amazonaws.com/dev/queryimg';
