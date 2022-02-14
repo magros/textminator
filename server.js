@@ -16,6 +16,14 @@ app.get('/', function (req, res) {
     res.send('Hello World!')
 })
 
+app.get('/delete-files', function (req, res) {
+    textExtractor.deleteFiles();
+    res.send({
+        message: 'Files deleted',
+        status: "success"
+    })
+})
+
 app.post('/extract-text', upload.single('file'), async function (req, res) {
     console.log('request received')
     try {
@@ -59,7 +67,6 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
         console.time("objectDetection")
         const entities = typePdf === "multiplecolumns" ? await ObjectDetection(path, mimeType) : null
         console.timeEnd("objectDetection")
-        textExtractor.deleteFiles()
         res.set({'content-type': 'application/json; charset=utf-8'})
         res.json({
             text,
@@ -87,13 +94,13 @@ app.post('/classify', upload.single('file'), async function (req, res) {
     let path = req.file.path
     let mimeType = file.mimetype
     const typePdf = mimeType === 'application/pdf' ? await textExtractor.classify(path) : ''
-    textExtractor.deleteFiles()
     res.set({'content-type': 'application/json; charset=utf-8'})
     res.json({
         typePdf,
         status: "success",
     })
 })
+
 const server = app.listen(3000, function () {
     console.log('Example app listening on port 3000!')
 })
