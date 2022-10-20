@@ -55,6 +55,8 @@ const parser = function (entities) {
         languages += buildXML(entities, classLang)
         personaldata += buildXML(entities, classPersonalData)
     }
+    console.log('end parsing')
+
     return `<experiences>\n${experiences}\n</experiences>\n\n
             <educations>\n${educations}\n</educations>\n\n
             <skills>\n${skills}\n</skills>\n\n
