@@ -87,6 +87,63 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
 
     }
 })
+
+app.post('/extract-text-light', upload.single('file'), async function (req, res) {
+    console.log('request received')
+    try {
+        let file = req.file
+        if (!file) throw new Error("File must be provided")
+        let path = req.file.path
+        let tool
+        let mimeType = file.mimetype
+        let text
+        
+        switch (mimeType) {
+            case "application/pdf":      
+                console.time("extractText")
+                text = await textExtractor.pdfToText(path)
+                console.timeEnd("extractText")
+                tool = "pdftotext"
+                text = textExtractor.cleanText(text)
+                break
+            case "application/msword":
+                tool = "catdoc"
+                text = await textExtractor.catDoc(path)
+                break
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                text = await textExtractor.docx2Txt(path)
+                tool = "docx2txt"
+                break
+            case "application/vnd.oasis.opendocument.text":
+                text = await textExtractor.odt2Txt(path)
+                tool = "odt2txt"
+                break
+            default:
+                throw new Error(`Cannot find tool for ${mimeType}`)
+        }
+
+        const language = LanguageDetector(text)
+        
+        res.set({'content-type': 'application/json; charset=utf-8'})
+        res.json({
+            text,
+            status: "success",
+            mimeType,
+            tool,
+            language,
+        })
+    } catch (e) {
+        Sentry.captureException(e)
+        console.log(e)
+        res.send({
+            message: e.message,
+            status: "error"
+        })
+
+    }
+})
+
+
 app.post('/classify', upload.single('file'), async function (req, res) {
     let file = req.file
     console.log('inside request')
