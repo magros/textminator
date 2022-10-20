@@ -67,7 +67,6 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
         console.time("objectDetection")
         const entities = typePdf === "multiplecolumns" ? await ObjectDetection(path, mimeType) : null
         console.timeEnd("objectDetection")
-        console.log(entities)
         res.set({'content-type': 'application/json; charset=utf-8'})
         res.json({
             text,
