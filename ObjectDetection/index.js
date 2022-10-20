@@ -5,6 +5,7 @@ const classExp = 2
 const classEdu = 4
 const classSkill = 6
 const classLang = 9
+const classPersonalData = 0
 const threshold = 0.40
 require('dotenv').config();
 
@@ -44,6 +45,7 @@ const parser = function (entities) {
     let educations = ''
     let skills = ''
     let languages = ''
+    let personaldata = ''
 
     for (const box of entities) {
         entities = box.all
@@ -51,10 +53,12 @@ const parser = function (entities) {
         educations += buildXML(entities, classEdu)
         skills += buildXML(entities, classSkill)
         languages += buildXML(entities, classLang)
+        personaldata += buildXML(entities, classPersonalData)
     }
     return `<experiences>\n${experiences}\n</experiences>\n\n
             <educations>\n${educations}\n</educations>\n\n
             <skills>\n${skills}\n</skills>\n\n
+            <personaldata>\n${personaldata}\n</personaldata>\n\n
             <languages>\n${languages}\n</languages>\n\n`;
 }
 
