@@ -65,7 +65,7 @@ app.post('/extract-text', upload.single('file'), async function (req, res) {
 
         const language = LanguageDetector(text)
         console.time("objectDetection")
-        const entities = typePdf === "multiplecolumns" ? await ObjectDetection(path, mimeType) : null
+        const entities = await ObjectDetection(path, mimeType, typePdf)
         console.timeEnd("objectDetection")
         res.set({'content-type': 'application/json; charset=utf-8'})
         res.json({
@@ -97,9 +97,9 @@ app.post('/extract-text-light', upload.single('file'), async function (req, res)
         let tool
         let mimeType = file.mimetype
         let text
-        
+
         switch (mimeType) {
-            case "application/pdf":      
+            case "application/pdf":
                 console.time("extractText")
                 text = await textExtractor.pdfToText(path)
                 console.timeEnd("extractText")
@@ -123,7 +123,7 @@ app.post('/extract-text-light', upload.single('file'), async function (req, res)
         }
 
         const language = LanguageDetector(text)
-        
+
         res.set({'content-type': 'application/json; charset=utf-8'})
         res.json({
             text,

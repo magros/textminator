@@ -9,9 +9,9 @@ const classPersonalData = 0
 const threshold = 0.40
 require('dotenv').config();
 
-const getEntities = async file => rp({
+const getEntities = async (file, typeDocument) => rp({
     method: 'POST',
-    uri: getEndpoint(),
+    uri: getEndpoint(typeDocument),
     formData: {
         file: {
             value: fs.createReadStream(file),
@@ -23,13 +23,16 @@ const getEntities = async file => rp({
     },
 })
 
-const getEndpoint = () => {
+const getEndpoint = (typeDocument) => {
     // const random = Math.floor(Math.random() * (10 - 1)) + 1
     //
     // if(random > 9){
     //     return process.env.OBJECT_DETECTION_URL;
     // }
-    return 'https://39aphlu1wk.execute-api.us-west-2.amazonaws.com/dev/queryimg';
+    console.log('typeDocument: ' + typeDocument)
+    return typeDocument === 'multiplecolumns' ?
+        'https://39aphlu1wk.execute-api.us-west-2.amazonaws.com/dev/queryimg' :
+        'https://s1k3k7l4n1.execute-api.us-west-2.amazonaws.com/dev/queryimgv2';
 }
 
 const buildXML = function (entities, classnumber) {
@@ -65,7 +68,7 @@ const parser = function (entities) {
             <languages>\n${languages}\n</languages>\n\n`;
 }
 
-module.exports = async (path, mimeType) => {
+module.exports = async (path, mimeType, typeDocument) => {
     console.log(mimeType)
 
     if (mimeType !== 'application/pdf') {
@@ -87,7 +90,7 @@ module.exports = async (path, mimeType) => {
         promises.push(new Promise((resolve, reject) => {
             console.log(`requesting entities ${path}-${i}.jpg`)
             console.time(`image${i}`)
-            getEntities(`${path}-${i}.jpg`).then(function (response) {
+            getEntities(`${path}-${i}.jpg`, typeDocument).then(function (response) {
                 console.timeEnd(`image${i}`)
                 resolve(JSON.parse(response))
             }).catch(() => reject)
