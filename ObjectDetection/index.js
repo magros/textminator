@@ -24,15 +24,11 @@ const getEntities = async (file, typeDocument) => rp({
 })
 
 const getEndpoint = (typeDocument) => {
-    // const random = Math.floor(Math.random() * (10 - 1)) + 1
-    //
-    // if(random > 9){
-    //     return process.env.OBJECT_DETECTION_URL;
-    // }
-    console.log('typeDocument: ' + typeDocument)
-    return typeDocument === 'multiplecolumns' ?
-        'https://39aphlu1wk.execute-api.us-west-2.amazonaws.com/dev/queryimg' :
-        'https://s1k3k7l4n1.execute-api.us-west-2.amazonaws.com/dev/queryimgv2';
+    return "https://s1k3k7l4n1.execute-api.us-west-2.amazonaws.com/dev/queryimgv3";
+    // console.log('typeDocument: ' + typeDocument)
+    // return typeDocument === 'multiplecolumns' ?
+    //     'https://39aphlu1wk.execute-api.us-west-2.amazonaws.com/dev/queryimg' :
+    //     'https://s1k3k7l4n1.execute-api.us-west-2.amazonaws.com/dev/queryimgv2';
 }
 
 const buildXML = function (entities, classnumber) {
